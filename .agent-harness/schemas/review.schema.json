@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-harness.dev/schemas/review.schema.json",
+  "title": "Agentic Review Result",
+  "type": "object",
+  "required": ["schema_version", "head_sha", "feature_id", "findings", "blocking"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "head_sha": { "type": "string" },
+    "feature_id": { "type": "string" },
+    "blocking": { "type": "boolean" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "category", "evidence", "impact", "confidence"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low", "informational"]
+          },
+          "category": { "type": "string" },
+          "file": { "type": ["string", "null"] },
+          "line": { "type": ["integer", "null"] },
+          "evidence": { "type": "string" },
+          "impact": { "type": "string" },
+          "recommended_remediation": { "type": "string" },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"]
+          }
+        }
+      }
+    }
+  }
+}

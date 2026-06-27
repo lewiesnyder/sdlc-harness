@@ -1,0 +1,74 @@
+version: 1
+
+feature_catalog:
+  path: features.md
+  id_pattern: "^[A-Z][A-Z0-9]+-[0-9]{3,}$"
+  eligible_statuses: [Ready]
+  in_progress_status: Work in Progress
+  done_status: Done
+
+repository:
+  default_branch: main
+  branch_template: "feature/{feature_id}"
+  plan_template: ".agent/plans/{feature_id}.md"
+  claim_mode: protected-claim-pr
+  draft_pull_request: true
+
+providers:
+  fake:
+    adapter: fake
+    credential: null
+  cursor-cloud:
+    adapter: cursor-cloud
+    credential: CURSOR_API_KEY
+  claude-code:
+    adapter: claude-code
+    credential: ANTHROPIC_API_KEY
+
+stages:
+  plan:
+    provider: fake
+    timeout_minutes: 45
+    max_cost_usd: 15
+  replan:
+    provider: fake
+    timeout_minutes: 45
+    max_cost_usd: 15
+  implement:
+    provider: fake
+    timeout_minutes: 120
+    max_cost_usd: 50
+  demo:
+    provider: fake
+    timeout_minutes: 45
+    artifact_sink: github-artifact
+  review:
+    provider: fake
+    timeout_minutes: 45
+    read_only: true
+
+commands:
+  build: "./scripts/ci/build"
+  unit_test: "./scripts/ci/unit-test"
+  lint: "./scripts/ci/lint"
+
+security:
+  require_same_repository_branch: true
+  allowed_author_permissions: [write, maintain, admin]
+  protected_paths:
+    - ".github/workflows/**"
+    - ".agent-harness/**"
+    - "infra/production/**"
+  network_profile: package-registries-only
+  prohibit_production_credentials: true
+  pin_actions_by_sha: true
+
+review:
+  blocking_severities: [critical, high]
+  require_acceptance_traceability: true
+  invalidate_on_new_commit: true
+
+telemetry:
+  otlp_endpoint_secret: OTEL_EXPORTER_OTLP_ENDPOINT
+  service_name: agentic-sdlc-harness
+  capture_prompt_content: false

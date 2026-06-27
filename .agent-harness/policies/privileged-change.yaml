@@ -1,0 +1,12 @@
+profile: privileged-change
+
+requires_permission: maintain
+allowed_paths:
+  - ".github/workflows/**"
+  - ".agent-harness/**"
+
+protected_paths: []
+
+network_profile: package-registries-only
+tool_profile: privileged-default
+timeout_seconds: 1800

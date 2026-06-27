@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-harness.dev/schemas/plan.schema.json",
+  "title": "Implementation Plan Front Matter",
+  "type": "object",
+  "required": [
+    "feature_id",
+    "status",
+    "plan_version",
+    "base_sha",
+    "head_sha_at_generation",
+    "provider",
+    "run_id",
+    "generated_at"
+  ],
+  "properties": {
+    "feature_id": { "type": "string" },
+    "status": { "type": "string" },
+    "plan_version": { "type": "integer", "minimum": 1 },
+    "base_sha": { "type": "string" },
+    "head_sha_at_generation": { "type": "string" },
+    "source_manifest_sha256": { "type": "string" },
+    "provider": { "type": "string" },
+    "model": { "type": ["string", "null"] },
+    "run_id": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "previous_plan_sha": { "type": ["string", "null"] }
+  }
+}

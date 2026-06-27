@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-harness.dev/schemas/run-result.schema.json",
+  "title": "Normalized Run Result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "provider",
+    "provider_run_id",
+    "operation",
+    "status",
+    "started_at",
+    "completed_at",
+    "input",
+    "output",
+    "usage"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "run_id": { "type": "string" },
+    "provider": { "type": "string" },
+    "provider_run_id": { "type": "string" },
+    "operation": {
+      "type": "string",
+      "enum": ["PLAN", "REPLAN", "IMPLEMENT", "DEMO", "REVIEW"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["SUCCEEDED", "FAILED", "CANCELLED", "TIMED_OUT", "BLOCKED"]
+    },
+    "started_at": { "type": "string", "format": "date-time" },
+    "completed_at": { "type": "string", "format": "date-time" },
+    "input": {
+      "type": "object",
+      "required": ["base_sha", "head_sha"],
+      "properties": {
+        "base_sha": { "type": "string" },
+        "head_sha": { "type": "string" },
+        "plan_sha": { "type": ["string", "null"] }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["summary"],
+      "properties": {
+        "resulting_head_sha": { "type": ["string", "null"] },
+        "commits": { "type": "array", "items": { "type": "string" } },
+        "changed_paths": { "type": "array", "items": { "type": "string" } },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["kind", "uri", "sha256"],
+            "properties": {
+              "kind": { "type": "string" },
+              "uri": { "type": "string" },
+              "sha256": { "type": "string" },
+              "expires_at": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "structured_result_uri": { "type": ["string", "null"] },
+        "summary": { "type": "string" }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "model": { "type": ["string", "null"] },
+        "input_tokens": { "type": ["integer", "null"] },
+        "output_tokens": { "type": ["integer", "null"] },
+        "cost_usd": { "type": ["number", "null"] }
+      }
+    },
+    "error": {
+      "type": ["object", "null"],
+      "properties": {
+        "category": { "type": ["string", "null"] },
+        "retryable": { "type": ["boolean", "null"] },
+        "message": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

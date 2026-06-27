@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-harness.dev/schemas/config.schema.json",
+  "title": "Agent Harness Configuration",
+  "type": "object",
+  "required": ["version", "feature_catalog", "repository", "providers", "stages"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "feature_catalog": {
+      "type": "object",
+      "required": ["path", "id_pattern", "eligible_statuses", "in_progress_status", "done_status"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "id_pattern": { "type": "string", "minLength": 1 },
+        "eligible_statuses": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "in_progress_status": { "type": "string" },
+        "done_status": { "type": "string" }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "required": ["default_branch", "branch_template", "plan_template", "claim_mode"],
+      "additionalProperties": false,
+      "properties": {
+        "default_branch": { "type": "string" },
+        "branch_template": { "type": "string", "pattern": ".*\\{feature_id\\}.*" },
+        "plan_template": { "type": "string", "pattern": ".*\\{feature_id\\}.*" },
+        "claim_mode": {
+          "type": "string",
+          "enum": ["protected-claim-pr", "trusted-coordinator"]
+        },
+        "draft_pull_request": { "type": "boolean", "default": true }
+      }
+    },
+    "providers": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["adapter"],
+        "additionalProperties": false,
+        "properties": {
+          "adapter": { "type": "string" },
+          "credential": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "stages": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["provider"],
+        "additionalProperties": false,
+        "properties": {
+          "provider": { "type": "string" },
+          "timeout_minutes": { "type": "integer", "minimum": 1 },
+          "max_cost_usd": { "type": "number", "minimum": 0 },
+          "read_only": { "type": "boolean" },
+          "artifact_sink": { "type": "string" }
+        }
+      }
+    },
+    "commands": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
