@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-harness.dev/schemas/run-request.schema.json",
+  "title": "Normalized Run Request",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "operation",
+    "idempotency_key",
+    "repository",
+    "work_item",
+    "authorization",
+    "context",
+    "policy",
+    "output"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "operation": {
+      "type": "string",
+      "enum": ["PLAN", "REPLAN", "IMPLEMENT", "DEMO", "REVIEW"]
+    },
+    "idempotency_key": { "type": "string", "minLength": 1 },
+    "repository": {
+      "type": "object",
+      "required": ["owner", "name", "default_branch", "base_sha", "head_sha", "feature_branch"],
+      "properties": {
+        "owner": { "type": "string" },
+        "name": { "type": "string" },
+        "default_branch": { "type": "string" },
+        "base_sha": { "type": "string" },
+        "head_sha": { "type": "string" },
+        "feature_branch": { "type": "string", "pattern": "^feature/" }
+      }
+    },
+    "work_item": {
+      "type": "object",
+      "required": ["feature_id", "pull_request_number"],
+      "properties": {
+        "feature_id": { "type": "string" },
+        "issue_number": { "type": ["integer", "null"] },
+        "pull_request_number": { "type": "integer" }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "required": ["actor", "actor_permission", "authorized_at"],
+      "properties": {
+        "actor": { "type": "string" },
+        "actor_permission": {
+          "type": "string",
+          "enum": ["write", "maintain", "admin"]
+        },
+        "authorized_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "context": {
+      "type": "object",
+      "required": ["manifest_uri"],
+      "properties": {
+        "manifest_uri": { "type": "string" },
+        "plan_path": { "type": ["string", "null"] },
+        "plan_sha": { "type": ["string", "null"] },
+        "feedback_cutoff": { "type": ["string", "null"] }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": ["profile", "allowed_paths", "protected_paths", "timeout_seconds"],
+      "properties": {
+        "profile": { "type": "string" },
+        "allowed_paths": { "type": "array", "items": { "type": "string" } },
+        "protected_paths": { "type": "array", "items": { "type": "string" } },
+        "network_profile": { "type": "string" },
+        "tool_profile": { "type": "string" },
+        "timeout_seconds": { "type": "integer", "minimum": 1 },
+        "max_cost_usd": { "type": ["number", "null"] },
+        "max_turns": { "type": ["integer", "null"] }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["required_schema", "commit_allowed"],
+      "properties": {
+        "required_schema": { "type": "string" },
+        "commit_allowed": { "type": "boolean" },
+        "artifact_sink": { "type": ["string", "null"] }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "properties": {
+        "traceparent": { "type": ["string", "null"] },
+        "baggage": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
